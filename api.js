@@ -42,7 +42,12 @@ function addNoteToList(note, prepend = false) {
   const body = document.createElement("p");
   body.textContent = note.body;
 
-  li.append(title, body);
+  const delBtn = document.createElement("button");
+  delBtn.type = "button";
+  delBtn.textContent = "Delete";
+  delBtn.addEventListener("click", () => deleteNote(note.id, li, delBtn));
+
+  li.append(title, body, delBtn);
 
   if (prepend) {
     notesList.prepend(li);
@@ -111,3 +116,22 @@ async function createNote(event) {
 }
 
 noteForm.addEventListener("submit", createNote);
+
+async function deleteNote(id, listItem, button) {
+  button.disabled = true;
+  setStatus("Deleting note...", "info");
+
+  try {
+    const { status } = await request(`${API_URL}/${id}`, { method: "DELETE" });
+
+    listItem.remove();
+    if (notesList.querySelectorAll("li[data-id]").length === 0) {
+      showEmptyState();
+    }
+    setStatus(`Note deleted (status ${status}).`, "success");
+  } catch (error) {
+    setStatus(`Error: could not delete note (${error.message}).`, "error");
+  } finally {
+    button.disabled = false;
+  }
+}
