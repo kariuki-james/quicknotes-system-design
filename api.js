@@ -3,6 +3,10 @@ const API_URL = "https://jsonplaceholder.typicode.com/posts";
 const loadBtn = document.getElementById("load-btn");
 const statusEl = document.getElementById("status");
 const notesList = document.getElementById("notes-list");
+const noteForm = document.getElementById("note-form");
+const titleInput = document.getElementById("title-input");
+const bodyInput = document.getElementById("body-input");
+const submitBtn = document.getElementById("submit-btn");
 
 async function request(url, options = {}) {
   const response = await fetch(url, options);
@@ -25,7 +29,7 @@ function showEmptyState() {
   notesList.appendChild(li);
 }
 
-function addNoteToList(note) {
+function addNoteToList(note, prepend = false) {
   const empty = notesList.querySelector(".empty");
   if (empty) empty.remove();
 
@@ -39,7 +43,12 @@ function addNoteToList(note) {
   body.textContent = note.body;
 
   li.append(title, body);
-  notesList.appendChild(li);
+
+  if (prepend) {
+    notesList.prepend(li);
+  } else {
+    notesList.appendChild(li);
+  }
 }
 
 async function loadNotes() {
@@ -65,3 +74,40 @@ async function loadNotes() {
 }
 
 loadBtn.addEventListener("click", loadNotes);
+
+async function createNote(event) {
+  event.preventDefault();
+
+  const title = titleInput.value.trim();
+  const body = bodyInput.value.trim();
+
+  if (title === "") {
+    setStatus("Error: a title is required.", "error");
+    return;
+  }
+  if (title.length > 100) {
+    setStatus("Error: the title must be 100 characters or fewer.", "error");
+    return;
+  }
+
+  submitBtn.disabled = true;
+  setStatus("Creating note...", "info");
+
+  try {
+    const { status, data: newNote } = await request(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ title, body, userId: 1 }),
+    });
+
+    addNoteToList(newNote, true);
+    noteForm.reset();
+    setStatus(`Note created (status ${status}, id ${newNote.id}).`, "success");
+  } catch (error) {
+    setStatus(`Error: could not create note (${error.message}).`, "error");
+  } finally {
+    submitBtn.disabled = false;
+  }
+}
+
+noteForm.addEventListener("submit", createNote);
