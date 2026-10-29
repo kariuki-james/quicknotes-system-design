@@ -1,0 +1,58 @@
+body {
+  font-family: system-ui, sans-serif;
+  max-width: 40rem;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  line-height: 1.5;
+}
+
+form {
+  display: grid;
+  gap: 0.5rem;
+  margin: 1.5rem 0;
+}
+input,
+textarea {
+  width: 100%;
+  padding: 0.5rem;
+  font: inherit;
+}
+textarea {
+  min-height: 5rem;
+}
+
+#notes-list {
+  list-style: none;
+  padding: 0;
+}
+#notes-list li {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+#notes-list h2 {
+  font-size: 1.1rem;
+  margin: 0 0 0.5rem;
+}
+#notes-list .empty {
+  border-style: dashed;
+  color: #666;
+}
+
+.status {
+  padding: 0.5rem;
+  border-radius: 6px;
+}
+.status--info {
+  background: #eef2ff;
+  color: #1e3a8a;
+}
+.status--success {
+  background: #e8f5e9;
+  color: #1b5e20;
+}
+.status--error {
+  background: #fdecea;
+  color: #b71c1c;
+}
